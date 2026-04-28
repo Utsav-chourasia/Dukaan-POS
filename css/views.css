@@ -1,0 +1,152 @@
+/* ============================================================
+   views.css — Full-page view styles (inventory, customers, history)
+   ============================================================ */
+
+/* ── View Base ───────────────────────────────────────────────── */
+.view {
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  flex: 1;
+}
+
+.view.active-view {
+  display: flex;
+}
+
+.view-inner {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px var(--gap-lg);
+}
+
+.card-grid { display: grid; gap: 10px; }
+
+/* ── Inventory Cards ─────────────────────────────────────────── */
+.item-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 13px 15px;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+  transition: border-color var(--transition);
+}
+
+.item-card:hover { border-color: var(--border-strong); }
+
+.ic-name    { font-weight: 600; font-size: 13px; }
+.ic-aliases { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.ic-price   { font-size: 13px; font-weight: 500; text-align: right; }
+.ic-stock   { font-size: 12px; color: var(--muted); text-align: right; margin-top: 2px; }
+.ic-stock.low { color: var(--warn); font-weight: 600; }
+
+.ic-btns { display: flex; flex-direction: column; gap: 5px; }
+
+.ic-btn {
+  padding: 5px 11px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background var(--transition);
+}
+
+.ic-btn:hover { background: var(--surface2); }
+
+.ic-btn.primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.ic-btn.primary:hover { opacity: .9; }
+
+.ic-btn.danger {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.ic-btn.danger:hover { background: var(--danger-light); }
+
+/* ── Customer Cards ──────────────────────────────────────────── */
+.cust-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 13px 15px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: border-color var(--transition);
+}
+
+.cust-card:hover { border-color: var(--border-strong); }
+
+.cc-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--accent-light);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.cc-name    { font-weight: 600; font-size: 14px; }
+.cc-phone   { font-size: 12px; color: var(--muted); }
+
+.cc-due     { margin-left: auto; text-align: right; }
+.cc-due-amt { font-size: 18px; font-weight: 800; color: var(--danger); }
+.cc-settled { font-size: 12px; color: var(--accent); font-weight: 600; }
+
+.cc-actions {
+  display: flex;
+  gap: 6px;
+  margin-left: var(--gap-sm);
+  flex-shrink: 0;
+}
+
+/* ── History Cards ───────────────────────────────────────────── */
+.hist-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 13px 15px;
+  margin-bottom: 10px;
+  transition: border-color var(--transition);
+}
+
+.hist-card:hover { border-color: var(--border-strong); }
+
+.hc-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--gap-sm);
+}
+
+.hc-id      { font-weight: 700; font-size: 14px; }
+.hc-cust    { font-size: 12px; color: var(--muted); }
+.hc-total   { font-size: 18px; font-weight: 800; text-align: right; }
+
+.hc-payment            { font-size: 11px; font-weight: 600; text-align: right; margin-top: 2px; }
+.hc-payment.paid       { color: var(--accent); }
+.hc-payment.due        { color: var(--danger); }
+
+.hc-items {
+  font-size: 12px;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  padding-top: var(--gap-sm);
+  line-height: 1.7;
+}
+
+.hc-date { font-size: 11px; color: var(--subtle); margin-top: 4px; }
