@@ -2,10 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dukaan POS — Kirana Billing System</title>
-
-  <!-- Stylesheets -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="theme-color" content="#1a6b3a"/>
+  <title>Dukaan POS</title>
   <link rel="stylesheet" href="css/reset.css"/>
   <link rel="stylesheet" href="css/variables.css"/>
   <link rel="stylesheet" href="css/layout.css"/>
@@ -15,65 +17,50 @@
   <link rel="stylesheet" href="css/responsive.css"/>
 </head>
 <body>
-
 <div id="app">
 
-  <!-- ── TOP BAR ── -->
+  <!-- TOP BAR -->
   <header id="topbar">
     <h1>🛒 Dukaan POS</h1>
     <span class="store-name" id="store-name-display">My Kirana Store</span>
     <span id="clock"></span>
-    <button class="top-btn" id="btn-add-product">+ Product</button>
-    <button class="top-btn" id="btn-add-customer">+ Customer</button>
-    <button class="top-btn" id="btn-settings">⚙ Settings</button>
+    <button class="top-btn" id="btn-add-product">+ Item</button>
+    <button class="top-btn" id="btn-settings">⚙</button>
   </header>
 
   <div id="main">
 
-    <!-- ── LEFT SIDEBAR ── -->
+    <!-- LEFT SIDEBAR (tablet+) -->
     <aside id="sidebar">
-      <div class="sb-section">
-        <div class="sb-title">Active Orders</div>
-      </div>
+      <div class="sb-section"><div class="sb-title">Active Orders</div></div>
       <div id="order-tabs"></div>
       <button class="new-order-btn" id="btn-new-order">+ New Order</button>
-
       <nav id="sidebar-nav">
         <div class="sb-title">Navigate</div>
-        <button class="nav-btn active" data-view="pos">
-          <span class="nav-icon">💰</span>Billing
-        </button>
-        <button class="nav-btn" data-view="inventory">
-          <span class="nav-icon">📦</span>Inventory
-        </button>
-        <button class="nav-btn" data-view="customers">
-          <span class="nav-icon">👥</span>Customers
-        </button>
-        <button class="nav-btn" data-view="history">
-          <span class="nav-icon">📜</span>Order History
-        </button>
+        <button class="nav-btn active" data-view="pos"><span class="nav-icon">💰</span>Billing</button>
+        <button class="nav-btn" data-view="inventory"><span class="nav-icon">📦</span>Inventory</button>
+        <button class="nav-btn" data-view="customers"><span class="nav-icon">👥</span>Customers</button>
+        <button class="nav-btn" data-view="history"><span class="nav-icon">📜</span>History</button>
       </nav>
     </aside>
 
-    <!-- ── CENTER PANEL ── -->
+    <!-- CENTER -->
     <main id="center">
 
       <!-- POS VIEW -->
       <section id="view-pos" class="view active-view">
         <div class="panel-hdr">
           <div class="panel-title" id="panel-title">No Order</div>
-          <button class="hdr-btn" id="btn-assign-customer">👤 Customer</button>
+          <button class="hdr-btn" id="btn-new-order-hdr">+ Order</button>
           <button class="hdr-btn danger" id="btn-void">Void</button>
           <button class="hdr-btn success" id="btn-finalize">Finalize ✓</button>
         </div>
         <div id="search-bar">
-          <input
-            type="text"
-            id="prod-search"
-            placeholder="Search product (cheeni, doodh, maggi)…"
-            autocomplete="off"
-          />
-          <button id="voice-btn" title="Voice input — Hindi / Hinglish">🎤</button>
+          <input type="text" id="prod-search"
+            placeholder="Search product…"
+            autocomplete="off" autocorrect="off" spellcheck="false"
+            inputmode="search"/>
+          <button id="voice-btn" title="Voice — Hindi/Hinglish">🎤</button>
         </div>
         <div id="product-results"></div>
         <div id="order-items"></div>
@@ -86,8 +73,8 @@
             <span class="total-amount" id="total-display">₹0</span>
           </div>
           <div class="footer-btns">
-            <button class="btn-due" id="btn-add-due">📋 Add to Due</button>
-            <button class="btn-paid" id="btn-mark-paid">✔ Mark Paid</button>
+            <button class="btn-due"  id="btn-add-due">📋 Due</button>
+            <button class="btn-paid" id="btn-mark-paid">✔ Paid</button>
           </div>
         </footer>
       </section>
@@ -96,51 +83,41 @@
       <section id="view-inventory" class="view">
         <div class="panel-hdr">
           <div class="panel-title">Inventory</div>
-          <button class="hdr-btn success" id="btn-inv-add">+ Add Product</button>
+          <button class="hdr-btn success" id="btn-inv-add">+ Product</button>
         </div>
-        <div class="view-inner">
-          <div class="card-grid" id="inv-list"></div>
-        </div>
+        <div class="view-inner"><div class="card-grid" id="inv-list"></div></div>
       </section>
 
       <!-- CUSTOMERS VIEW -->
       <section id="view-customers" class="view">
         <div class="panel-hdr">
           <div class="panel-title">Customers</div>
-          <button class="hdr-btn success" id="btn-cust-add">+ Add Customer</button>
+          <button class="hdr-btn success" id="btn-cust-add">+ Customer</button>
         </div>
-        <div class="view-inner">
-          <div class="card-grid" id="cust-list-full"></div>
-        </div>
+        <div class="view-inner"><div class="card-grid" id="cust-list-full"></div></div>
       </section>
 
       <!-- HISTORY VIEW -->
       <section id="view-history" class="view">
         <div class="panel-hdr">
           <div class="panel-title">Order History</div>
-          <button class="hdr-btn" id="btn-export-csv">⬇ Export CSV</button>
+          <button class="hdr-btn" id="btn-export-csv">⬇ CSV</button>
         </div>
         <div class="view-inner" id="hist-list"></div>
       </section>
 
     </main>
 
-    <!-- ── RIGHT PANEL ── -->
+    <!-- RIGHT PANEL (desktop only) -->
     <aside id="right">
       <div class="view-tabs">
         <button class="vtab active" data-rtab="r-customer">Customer</button>
         <button class="vtab" data-rtab="r-stock">Stock</button>
       </div>
-
       <div id="r-customer" class="rpanel active-rpanel">
         <div class="right-section">
           <div class="rs-title">Assign to Order</div>
-          <input
-            class="cust-search-input"
-            id="cust-filter"
-            type="text"
-            placeholder="Search customer…"
-          />
+          <input class="cust-search-input" id="cust-filter" type="text" placeholder="Search customer…"/>
           <div id="cust-picker"></div>
         </div>
         <div class="right-section" id="cust-due-section">
@@ -149,35 +126,69 @@
           <button class="pay-btn" id="btn-record-payment">Record Payment</button>
         </div>
       </div>
-
       <div id="r-stock" class="rpanel">
         <div id="stock-mini-list"></div>
       </div>
     </aside>
 
-    <!-- ── VOICE OVERLAY ── -->
+    <!-- VOICE OVERLAY -->
     <div id="voice-overlay">
       <div class="vo-title">🎤 Listening — Hindi / Hinglish / English</div>
       <div class="vo-transcript" id="vo-transcript">—</div>
       <div class="vo-parsed" id="vo-parsed"></div>
+      <div class="vo-suggestions" id="vo-suggestions"></div>
       <div class="vo-btns">
         <button id="vo-cancel">Cancel</button>
         <button class="vo-confirm" id="vo-confirm" disabled>Apply ✓</button>
       </div>
     </div>
 
-    <!-- ── TOAST ── -->
+    <!-- TOAST -->
     <div id="toast" role="status" aria-live="polite"></div>
 
-    <!-- ── MODAL ── -->
+    <!-- MODAL -->
     <div id="modal-bg" role="dialog" aria-modal="true">
       <div class="modal" id="modal-content"></div>
     </div>
 
   </div><!-- /#main -->
+
+  <!-- MOBILE BOTTOM NAV -->
+  <nav id="mobile-nav">
+    <button class="mob-nav-btn active" data-view="pos">
+      <span class="nav-icon">💰</span><span>Billing</span>
+    </button>
+    <button class="mob-nav-btn" data-view="inventory">
+      <span class="nav-icon">📦</span><span>Stock</span>
+    </button>
+    <button class="mob-nav-btn" data-view="customers">
+      <span class="nav-icon">👥</span><span>Customers</span>
+    </button>
+    <button class="mob-nav-btn" data-view="history">
+      <span class="nav-icon">📜</span><span>History</span>
+    </button>
+    <button class="mob-nav-btn" id="mob-orders-btn">
+      <span class="nav-icon">🗂</span><span>Orders</span>
+    </button>
+  </nav>
+
+  <!-- MOBILE ORDERS SHEET -->
+  <div id="mob-order-sheet">
+    <div class="mob-sheet-bg" id="mob-sheet-bg"></div>
+    <div class="mob-sheet-inner">
+      <div class="mob-sheet-hdr">
+        <div class="mob-sheet-title">Active Orders</div>
+        <button class="mob-sheet-close" id="mob-sheet-close">✕</button>
+      </div>
+      <div class="mob-sheet-body">
+        <button class="new-order-btn" id="mob-new-order" style="margin:0 0 10px;width:100%">+ New Order</button>
+        <div id="mob-order-tabs"></div>
+      </div>
+    </div>
+  </div>
+
 </div><!-- /#app -->
 
-<!-- JS modules — order matters -->
 <script src="js/db.js"></script>
 <script src="js/utils.js"></script>
 <script src="js/orders.js"></script>
@@ -187,6 +198,5 @@
 <script src="js/modals.js"></script>
 <script src="js/router.js"></script>
 <script src="js/app.js"></script>
-
 </body>
 </html>

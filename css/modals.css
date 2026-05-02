@@ -1,129 +1,101 @@
 /* ============================================================
-   modals.css — Modal dialogs and form elements
+   modals.css — Modal dialogs & forms (mobile-first)
    ============================================================ */
-
-/* ── Modal Backdrop ──────────────────────────────────────────── */
 #modal-bg {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,.45);
-  z-index: 30;
-  display: none;
-  align-items: center;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.48);
+  z-index: 50; display: none;
+  align-items: flex-end;          /* slide up from bottom on mobile */
   justify-content: center;
+  padding: 0;
 }
-
 #modal-bg.show { display: flex; }
 
-/* ── Modal Box ───────────────────────────────────────────────── */
+/* On desktop: center the modal */
+@media (min-width: 768px) {
+  #modal-bg { align-items: center; padding: var(--gap-lg); }
+  .modal { border-radius: var(--radius-xl) !important; }
+}
+
 .modal {
   background: var(--surface);
-  border-radius: var(--radius-xl);
-  padding: 22px 22px 18px;
-  min-width: 320px;
-  max-width: 400px;
-  width: 90%;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  padding: 20px 18px 24px;
+  width: 100%; max-width: 440px;
+  max-height: 90dvh; overflow-y: auto;
   box-shadow: var(--shadow-lg);
-  max-height: 90vh;
-  overflow-y: auto;
+  /* safe area for notched phones */
+  padding-bottom: max(24px, env(safe-area-inset-bottom));
 }
+.modal h3 { font-size: 17px; font-weight: 700; margin-bottom: 16px; }
 
-.modal h3 {
-  font-size: 16px;
-  font-weight: 700;
-  margin-bottom: 16px;
-}
-
-/* ── Form Elements ───────────────────────────────────────────── */
-.form-group { margin-bottom: 12px; }
-
-.form-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: .5px;
+/* drag handle hint */
+.modal::before {
+  content: '';
   display: block;
-  margin-bottom: 5px;
+  width: 40px; height: 4px;
+  background: var(--border-strong);
+  border-radius: 2px;
+  margin: 0 auto 16px;
 }
+@media (min-width: 768px) { .modal::before { display: none; } }
 
+.form-group  { margin-bottom: 13px; }
+.form-label  {
+  font-size: 11px; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .5px;
+  display: block; margin-bottom: 5px;
+}
 .form-input {
   width: 100%;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 9px 12px;
-  font-size: 13px;
-  background: var(--bg);
-  color: var(--text);
-  outline: none;
+  padding: 11px 13px;
+  font-size: 15px;              /* 16px prevents iOS zoom, 15px is close enough */
+  background: var(--bg); color: var(--text);
+  outline: none; min-height: var(--btn-height);
   transition: border-color var(--transition), background var(--transition);
 }
+.form-input:focus { border-color: var(--accent); background: #fff; }
+.form-hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
+.modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 380px) { .modal-grid { grid-template-columns: 1fr; } }
 
-.form-input:focus {
-  border-color: var(--accent);
-  background: #fff;
-}
-
-.form-hint {
-  font-size: 11px;
-  color: var(--muted);
-  margin-top: 4px;
-}
-
-.modal-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-/* ── Modal Buttons ───────────────────────────────────────────── */
-.modal-btns {
-  display: flex;
-  gap: var(--gap-sm);
-  margin-top: 16px;
-}
-
+.modal-btns { display: flex; gap: var(--gap-sm); margin-top: 18px; }
 .modal-btns button {
-  flex: 1;
-  padding: 9px;
-  border-radius: var(--radius-md);
-  font-size: 13px;
-  font-weight: 600;
+  flex: 1; padding: 12px; border-radius: var(--radius-md);
+  font-size: 14px; font-weight: 600;
   border: 1px solid var(--border);
+  min-height: var(--btn-height);
   transition: background var(--transition), opacity var(--transition);
 }
-
-.modal-btns button:hover { background: var(--surface2); }
-
-.modal-ok {
-  background: var(--accent) !important;
-  color: #fff !important;
-  border-color: var(--accent) !important;
-}
-
+.modal-btns button:hover  { background: var(--surface2); }
+.modal-ok     { background: var(--accent) !important; color: #fff !important; border-color: var(--accent) !important; }
 .modal-ok:hover { opacity: .9 !important; }
-
-.modal-danger {
-  background: var(--danger) !important;
-  color: #fff !important;
-  border-color: var(--danger) !important;
-}
-
+.modal-danger { background: var(--danger) !important; color: #fff !important; border-color: var(--danger) !important; }
 .modal-danger:hover { opacity: .9 !important; }
 
-/* ── Finalize summary ────────────────────────────────────────── */
 .finalize-summary {
-  background: var(--bg);
-  border-radius: var(--radius-md);
-  padding: 12px 14px;
-  margin-bottom: 16px;
-  font-size: 13px;
-  color: var(--muted);
-  line-height: 1.8;
+  background: var(--bg); border-radius: var(--radius-md);
+  padding: 13px 14px; margin-bottom: 16px;
+  font-size: 13px; color: var(--muted); line-height: 1.9;
 }
+.finalize-total { font-size: 26px; font-weight: 800; color: var(--text); }
 
-.finalize-total {
-  font-size: 24px;
-  font-weight: 800;
-  color: var(--text);
+/* Qty edit modal */
+.qty-modal-display {
+  text-align: center; padding: 20px 0;
 }
+.qty-modal-val {
+  font-size: 42px; font-weight: 800;
+  color: var(--text); display: block; margin-bottom: 4px;
+}
+.qty-modal-unit { font-size: 14px; color: var(--muted); }
+.qty-modal-btns { display: flex; gap: var(--gap-sm); justify-content: center; flex-wrap: wrap; margin-top: 12px; }
+.qty-preset {
+  padding: 10px 16px; border-radius: var(--radius-pill);
+  border: 1px solid var(--border); font-size: 13px; font-weight: 500;
+  min-height: var(--touch-min); cursor: pointer;
+  transition: background var(--transition);
+}
+.qty-preset:hover { background: var(--accent-light); border-color: var(--accent); }

@@ -1,54 +1,36 @@
 /* ============================================================
-   variables.css — Design tokens (colors, spacing, typography)
+   variables.css — Design tokens (mobile-first)
    ============================================================ */
 :root {
-  /* Colors */
   --bg:             #f7f5f0;
   --surface:        #ffffff;
   --surface2:       #f0ede8;
   --border:         #e0dbd2;
   --border-strong:  #c8c3ba;
-
   --text:           #1a1a18;
   --muted:          #6b6860;
   --subtle:         #9e9b95;
-
   --accent:         #1a6b3a;
   --accent-light:   #e8f5ed;
   --accent-hover:   #155630;
-
   --danger:         #c0392b;
   --danger-light:   #fef2f2;
-  --danger-hover:   #a33020;
-
   --warn:           #d97706;
   --warn-light:     #fffbeb;
-
-  --info:           #1a5fa6;
-  --info-light:     #eff6ff;
-
-  /* Typography */
   --font: 'Noto Sans', 'Segoe UI', system-ui, sans-serif;
-
-  /* Spacing */
-  --gap-xs:   4px;
-  --gap-sm:   8px;
-  --gap-md:   12px;
-  --gap-lg:   16px;
-  --gap-xl:   24px;
-
-  /* Radii */
-  --radius-sm:  6px;
-  --radius-md:  9px;
-  --radius-lg:  12px;
-  --radius-xl:  16px;
+  --gap-xs:  4px;
+  --gap-sm:  8px;
+  --gap-md:  12px;
+  --gap-lg:  16px;
+  --gap-xl:  24px;
+  --touch-min:  44px;
+  --btn-height: 48px;
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   14px;
   --radius-pill: 999px;
-
-  /* Shadows */
-  --shadow-sm:  0 1px 4px rgba(0,0,0,.08);
-  --shadow-md:  0 4px 16px rgba(0,0,0,.12);
-  --shadow-lg:  0 8px 32px rgba(0,0,0,.16);
-
-  /* Transitions */
-  --transition: .12s ease;
+  --shadow-sm: 0 1px 4px rgba(0,0,0,.08);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.12);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,.18);
+  --transition: .13s ease;
 }

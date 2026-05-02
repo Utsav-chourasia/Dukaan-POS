@@ -1,51 +1,42 @@
 /* ============================================================
-   app.js — Application entry point: boot sequence & event wiring
+   app.js — Boot + all event bindings
    ============================================================ */
-
 document.addEventListener('DOMContentLoaded', () => {
 
-  /* ── 1. Load persisted data ── */
+  /* 1. Load data */
   loadDB();
   $('store-name-display').textContent = DB.storeName;
 
-  /* ── 2. Restore last active order (if any) ── */
-  activeOrderId = DB.orders.length
-    ? DB.orders[DB.orders.length - 1].id
-    : null;
+  /* 2. Restore last active order */
+  activeOrderId = DB.orders.length ? DB.orders[DB.orders.length-1].id : null;
 
-  /* ── 3. Initial renders ── */
+  /* 3. Initial renders */
   setView('pos');
   renderOrderTabs();
+  renderMobOrderTabs();
   renderCurrentOrder();
   renderCustPicker();
   renderStockMiniList();
   startClock();
 
-  /* ── 4. Create a first order automatically if none exist ── */
+  /* 4. Auto-create first order */
   if (!DB.orders.length) createOrder();
 
-  /* ══════════════════════════════════════════════════════════
-     EVENT BINDINGS
-     ══════════════════════════════════════════════════════════ */
+  /* ═══════════════ EVENT BINDINGS ═══════════════ */
 
   /* Top bar */
   $('btn-add-product').addEventListener('click', () => openModal('product'));
-  $('btn-add-customer').addEventListener('click', () => openModal('customer'));
-  $('btn-settings').addEventListener('click', () => openModal('settings'));
+  $('btn-settings').addEventListener('click',     () => openModal('settings'));
 
-  /* Sidebar */
-  $('btn-new-order').addEventListener('click', createOrder);
+  /* Sidebar new order */
+  $('btn-new-order')?.addEventListener('click', createOrder);
 
-  document.querySelectorAll('#sidebar-nav .nav-btn').forEach(btn => {
-    btn.addEventListener('click', () => setView(btn.dataset.view));
-  });
-
-  /* POS panel */
-  $('btn-assign-customer').addEventListener('click', () => rightTab('r-customer'));
+  /* POS panel header */
+  $('btn-new-order-hdr').addEventListener('click', createOrder);
   $('btn-void').addEventListener('click', voidOrder);
   $('btn-finalize').addEventListener('click', () => openModal('finalize'));
-  $('btn-add-due').addEventListener('click', () => finalizeOrder('due'));
-  $('btn-mark-paid').addEventListener('click', () => finalizeOrder('paid'));
+  $('btn-add-due').addEventListener('click',  () => finalizeOrder('due'));
+  $('btn-mark-paid').addEventListener('click',() => finalizeOrder('paid'));
 
   /* Product search */
   $('prod-search').addEventListener('input',   e => searchProducts(e.target.value));
@@ -57,44 +48,59 @@ document.addEventListener('DOMContentLoaded', () => {
   $('vo-confirm').addEventListener('click', confirmVoice);
 
   /* Right panel tabs */
-  document.querySelectorAll('.vtab').forEach(btn => {
-    btn.addEventListener('click', () => rightTab(btn.dataset.rtab));
-  });
+  $$('.vtab').forEach(btn => btn.addEventListener('click', () => rightTab(btn.dataset.rtab)));
 
   /* Customer filter */
   $('cust-filter').addEventListener('input', e => renderCustPicker(e.target.value));
 
-  /* Record payment button (right panel) */
+  /* Record payment (right panel) */
   $('btn-record-payment').addEventListener('click', () => {
-    const order = currentOrder();
-    if (order?.customerId) openModal('paymentDirect', order.customerId);
-    else toast('Assign a customer to this order first');
+    const o = currentOrder();
+    if (o?.customerId) openModal('paymentDirect', o.customerId);
+    else toast('Assign a customer first');
   });
 
-  /* Inventory view buttons */
+  /* Inventory view */
   $('btn-inv-add').addEventListener('click', () => openModal('product'));
 
-  /* Customers view button */
+  /* Customers view */
   $('btn-cust-add').addEventListener('click', () => openModal('customer'));
 
-  /* History export */
+  /* History */
   $('btn-export-csv').addEventListener('click', exportHistoryCSV);
 
-  /* Modal backdrop click to close */
+  /* Sidebar nav (desktop/tablet) */
+  $$('#sidebar-nav .nav-btn').forEach(btn =>
+    btn.addEventListener('click', () => setView(btn.dataset.view))
+  );
+
+  /* Mobile bottom nav */
+  $$('#mobile-nav .mob-nav-btn[data-view]').forEach(btn =>
+    btn.addEventListener('click', () => setView(btn.dataset.view))
+  );
+
+  /* Mobile orders button */
+  $('mob-orders-btn').addEventListener('click', openMobSheet);
+  $('mob-sheet-close').addEventListener('click', closeMobSheet);
+  $('mob-sheet-bg').addEventListener('click', closeMobSheet);
+  $('mob-new-order').addEventListener('click', () => { createOrder(); closeMobSheet(); });
+
+  /* Modal close on backdrop */
   $('modal-bg').addEventListener('click', onModalBgClick);
 
   /* Keyboard shortcuts */
   document.addEventListener('keydown', e => {
-    // Esc → close modal or cancel voice
     if (e.key === 'Escape') {
       if ($('modal-bg').classList.contains('show')) closeModal();
+      else if ($('mob-order-sheet').classList.contains('show')) closeMobSheet();
       else if (voiceActive) cancelVoice();
     }
-    // Ctrl/Cmd + N → new order
-    if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
-      e.preventDefault();
-      createOrder();
-    }
+    if ((e.ctrlKey || e.metaKey) && e.key === 'n') { e.preventDefault(); createOrder(); }
   });
+
+  /* Prevent double-tap zoom on buttons (iOS) */
+  document.addEventListener('touchend', e => {
+    if (e.target.tagName === 'BUTTON') e.preventDefault();
+  }, { passive: false });
 
 });

@@ -1,42 +1,46 @@
 /* ============================================================
-   responsive.css — Breakpoints for tablet and mobile
+   responsive.css — Breakpoint overrides only
+   Base styles are already mobile-first in other CSS files.
    ============================================================ */
 
-/* ── Tablet (≤ 900px) — hide right panel ────────────────────── */
-@media (max-width: 900px) {
-  #main { grid-template-columns: 200px 1fr; }
-  #right { display: none; }
+/* ── Tablet ≥ 768px ─────────────────────────────────── */
+@media (min-width: 768px) {
+  #topbar h1      { font-size: 16px; }
+  .store-name     { display: inline; }
+  #mobile-nav     { display: none; }
+  #toast          { bottom: auto; top: 62px; left: auto; right: var(--gap-lg); transform: none; }
+  #voice-overlay  { bottom: 20px; }
 }
 
-/* ── Small tablet / large phone (≤ 700px) ───────────────────── */
-@media (max-width: 700px) {
-  #main { grid-template-columns: 1fr; }
-  #sidebar { display: none; }
-
-  .modal-grid { grid-template-columns: 1fr; }
-
-  #topbar h1 { font-size: 14px; }
-  .store-name { display: none; }
-  .top-btn { padding: 5px 9px; font-size: 11px; }
+/* ── Desktop ≥ 1024px ───────────────────────────────── */
+@media (min-width: 1024px) {
+  #right          { display: flex; }
+  .panel-title    { font-size: 15px; }
+  #prod-search    { font-size: 14px; }
+  .total-amount   { font-size: 24px; }
+  .footer-btns button { min-height: 44px; padding: 10px; }
 }
 
-/* ── Mobile (≤ 480px) ────────────────────────────────────────── */
-@media (max-width: 480px) {
-  .panel-hdr { flex-wrap: wrap; gap: 6px; }
-  .panel-title { width: 100%; }
+/* ── Large desktop ≥ 1280px ─────────────────────────── */
+@media (min-width: 1280px) {
+  #main { grid-template-columns: 240px 1fr 280px; }
+}
 
-  #order-footer { padding: 10px 12px; }
-  .total-amount { font-size: 20px; }
+/* ── Small phones < 360px ───────────────────────────── */
+@media (max-width: 359px) {
+  .top-btn     { padding: 5px 7px; font-size: 11px; }
+  #topbar h1   { font-size: 13px; }
+  .total-amount { font-size: 22px; }
+  .footer-btns button { font-size: 13px; }
+  .order-item  { padding: 9px 10px; }
+}
 
-  .footer-btns button { font-size: 12px; padding: 9px 8px; }
-
-  .item-card {
-    grid-template-columns: 1fr auto;
-    grid-template-rows: auto auto;
+/* ── iOS safe area ──────────────────────────────────── */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  #mobile-nav {
+    padding-bottom: env(safe-area-inset-bottom);
   }
-
-  .ic-btns {
-    flex-direction: row;
-    grid-column: 1 / -1;
+  #order-footer {
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
   }
 }
