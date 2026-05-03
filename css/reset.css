@@ -1,5 +1,5 @@
 /* ============================================================
-   reset.css — Normalize browser defaults
+   reset.css — Normalize + mobile touch fixes
    ============================================================ */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -14,6 +14,20 @@ html, body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Prevent text size inflation on orientation change */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/*
+  MOBILE TOUCH FIX — touch-action: manipulation
+  ─────────────────────────────────────────────
+  This is the CORRECT way to prevent double-tap zoom on buttons.
+  It does NOT suppress the click event (unlike preventDefault on touchend).
+  Applies to all interactive elements globally.
+*/
+button, a, input, select, textarea, label, [role="button"] {
+  touch-action: manipulation;
 }
 
 button {
@@ -22,11 +36,17 @@ button {
   cursor: pointer;
   border: none;
   background: none;
+  /* Prevent iOS from styling buttons in its own way */
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 input, select, textarea {
   font-family: inherit;
   font-size: inherit;
+  /* Prevent iOS zoom on focus (font-size >= 16px handles this too) */
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 a {
@@ -34,11 +54,14 @@ a {
   text-decoration: none;
 }
 
-ul, ol {
-  list-style: none;
+ul, ol { list-style: none; }
+
+/* Remove tap highlight on all elements — we style our own focus states */
+* {
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* Scrollbar styling */
+/* Scrollbar styling (desktop) */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #d4d0c8; border-radius: 10px; }

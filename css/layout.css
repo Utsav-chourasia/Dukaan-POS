@@ -53,7 +53,6 @@ body {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  position: relative;
 }
 
 /* ── Desktop: 3-column grid ───────────────────────────── */
@@ -195,9 +194,17 @@ body {
 /* ── Mobile Order Sheet (bottom drawer) ────────────────── */
 #mob-order-sheet {
   position: fixed; inset: 0; z-index: 50;
-  display: none; flex-direction: column; justify-content: flex-end;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  /* visibility+pointer-events is safer than display:none on mobile —
+     avoids display toggling race conditions that can leave an invisible
+     blocking layer over the screen */
+  visibility: hidden;
+  pointer-events: none;
 }
-#mob-order-sheet.show { display: flex; }
+#mob-order-sheet.show {
+  visibility: visible;
+  pointer-events: auto;
+}
 .mob-sheet-bg {
   position: absolute; inset: 0;
   background: rgba(0,0,0,.4); backdrop-filter: blur(2px);

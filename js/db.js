@@ -1,21 +1,22 @@
 /* ============================================================
    db.js — Data layer: schema, seed data, localStorage
+   v3: walkIn field added to order schema
    ============================================================ */
 const DB = {
   storeName: 'My Kirana Store',
   products: [
-    { id:1,  name:'Cheeni',     aliases:['sugar','shakkar','chini','cheeni','cheen'],         price:45,  unit:'kg',     stock:50,  lowAt:10 },
-    { id:2,  name:'Doodh',      aliases:['milk','doodh','dudh','doodha'],                     price:28,  unit:'litre',  stock:20,  lowAt:5  },
-    { id:3,  name:'Maggi',      aliases:['maggi','noodles','noodle','magi'],                  price:14,  unit:'packet', stock:100, lowAt:20 },
-    { id:4,  name:'Atta',       aliases:['atta','flour','wheat','aata','ata'],                price:40,  unit:'kg',     stock:30,  lowAt:8  },
-    { id:5,  name:'Chai Patti', aliases:['tea','chai','chaa','patti','chaipatti','cha','cai'],price:220, unit:'kg',     stock:8,   lowAt:5  },
-    { id:6,  name:'Sarso Tel',  aliases:['oil','tel','mustard','sarso','sorse','teel','sarson'],price:130,unit:'litre', stock:12,  lowAt:5  },
-    { id:7,  name:'Namak',      aliases:['salt','namak','noon','loon','nabhak','namk'],        price:20,  unit:'kg',     stock:40,  lowAt:10 },
-    { id:8,  name:'Dal Masur',  aliases:['masur','masoor','dal','lentil','daal','daalmashur'], price:90,  unit:'kg',     stock:15,  lowAt:5  },
-    { id:9,  name:'Biscuit',    aliases:['biscuit','parle','krack','snack','biskut','biskit'], price:10,  unit:'packet', stock:60,  lowAt:15 },
-    { id:10, name:'Sabun',      aliases:['soap','sabun','saboon','saboons'],                   price:25,  unit:'piece',  stock:30,  lowAt:8  },
-    { id:11, name:'Chawal',     aliases:['rice','chawal','chawol','bhat','bhaat','chaawal'],   price:60,  unit:'kg',     stock:80,  lowAt:20 },
-    { id:12, name:'Aloo',       aliases:['potato','aloo','alu','aaloo'],                       price:30,  unit:'kg',     stock:25,  lowAt:10 },
+    { id:1,  name:'Cheeni',     aliases:['sugar','shakkar','chini','cheeni','cheen'],            price:45,  unit:'kg',     stock:50,  lowAt:10 },
+    { id:2,  name:'Doodh',      aliases:['milk','doodh','dudh','doodha'],                        price:28,  unit:'litre',  stock:20,  lowAt:5  },
+    { id:3,  name:'Maggi',      aliases:['maggi','noodles','noodle','magi'],                     price:14,  unit:'packet', stock:100, lowAt:20 },
+    { id:4,  name:'Atta',       aliases:['atta','flour','wheat','aata','ata'],                   price:40,  unit:'kg',     stock:30,  lowAt:8  },
+    { id:5,  name:'Chai Patti', aliases:['tea','chai','chaa','patti','chaipatti','cha','cai'],   price:220, unit:'kg',     stock:8,   lowAt:5  },
+    { id:6,  name:'Sarso Tel',  aliases:['oil','tel','mustard','sarso','sorse','teel','sarson'], price:130, unit:'litre',  stock:12,  lowAt:5  },
+    { id:7,  name:'Namak',      aliases:['salt','namak','noon','loon','nabhak','namk'],          price:20,  unit:'kg',     stock:40,  lowAt:10 },
+    { id:8,  name:'Dal Masur',  aliases:['masur','masoor','dal','lentil','daal','daalmashur'],   price:90,  unit:'kg',     stock:15,  lowAt:5  },
+    { id:9,  name:'Biscuit',    aliases:['biscuit','parle','krack','snack','biskut','biskit'],   price:10,  unit:'packet', stock:60,  lowAt:15 },
+    { id:10, name:'Sabun',      aliases:['soap','sabun','saboon'],                               price:25,  unit:'piece',  stock:30,  lowAt:8  },
+    { id:11, name:'Chawal',     aliases:['rice','chawal','chawol','bhat','bhaat','chaawal'],     price:60,  unit:'kg',     stock:80,  lowAt:20 },
+    { id:12, name:'Aloo',       aliases:['potato','aloo','alu','aaloo'],                         price:30,  unit:'kg',     stock:25,  lowAt:10 },
   ],
   customers: [
     { id:1, name:'Ramesh Sahu',  phone:'9876543210', due:350,  initials:'RS' },
@@ -26,22 +27,40 @@ const DB = {
   ],
   orders:  [],
   history: [],
-  nextOrderId:   1001,
-  nextProductId: 13,
+  nextOrderId:    1001,
+  nextProductId:  13,
   nextCustomerId: 6,
 };
 
-const STORAGE_KEY = 'dukaan_pos_v2';
+/*
+  ORDER SCHEMA (v3):
+  {
+    id, items[], customerId,
+    walkIn: { name, phone } | null,   ← NEW: temporary walk-in details
+    finalized, payment,
+    created, finalizedAt
+  }
+
+  walkIn is set when:
+  - customerId is null AND user enters name/phone on due finalization
+  - It stores the data WITH the order (not as a permanent customer)
+  - User can later "convert" walkIn to a real customer from history
+*/
+
+const STORAGE_KEY = 'dukaan_pos_v3';
 
 function saveDB() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DB)); } catch(e){}
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DB)); } catch(e) {}
 }
 
 function loadDB() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) Object.assign(DB, JSON.parse(raw));
-  } catch(e){}
+    // Also try loading v2 data on first upgrade
+    const rawV2 = !raw ? localStorage.getItem('dukaan_pos_v2') : null;
+    if (raw)   Object.assign(DB, JSON.parse(raw));
+    else if (rawV2) Object.assign(DB, JSON.parse(rawV2));
+  } catch(e) {}
 }
 
 /* Finders */
@@ -49,15 +68,10 @@ function findProduct(id)  { return DB.products.find(p => p.id === id);  }
 function findCustomer(id) { return DB.customers.find(c => c.id === id); }
 function findOrder(id)    { return DB.orders.find(o => o.id === id);    }
 
-/* ── Validation helpers ─────────────────────────────── */
-/**
- * Parse a quantity string — supports decimals and fractions.
- * Returns null if invalid.
- */
+/* ── Quantity helpers ──────────────────────────────────── */
 function parseQty(raw) {
   if (raw === null || raw === undefined || raw === '') return null;
   const s = String(raw).trim();
-  // fraction: "1/4"
   const frac = s.match(/^(\d+)\s*\/\s*(\d+)$/);
   if (frac) {
     const v = parseInt(frac[1]) / parseInt(frac[2]);
@@ -67,15 +81,21 @@ function parseQty(raw) {
   return isFinite(v) && v > 0 ? v : null;
 }
 
-/** Format qty: strip unnecessary trailing zeros */
 function fmtQty(n) {
   if (n === undefined || n === null) return '0';
-  // round to 3dp max to avoid floating-point noise
-  const rounded = Math.round(n * 1000) / 1000;
-  return parseFloat(rounded.toFixed(3)).toString();
+  return parseFloat(Math.round(n * 1000) / 1000).toString();
 }
 
-/** Format price — always 2dp */
 function fmtPrice(n) {
-  return (Math.round(n * 100) / 100).toFixed(2);
+  return (Math.round((n || 0) * 100) / 100).toFixed(2);
+}
+
+/* ── Display name for an order (used in tabs & header) ── */
+function orderDisplayName(order) {
+  if (order.customerId) {
+    const c = findCustomer(order.customerId);
+    if (c) return c.name;
+  }
+  if (order.walkIn?.name) return `${order.walkIn.name} (walk-in)`;
+  return 'Walk-in';
 }

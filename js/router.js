@@ -46,9 +46,28 @@ function renderHistoryView() {
     const cust  = o.customerId ? findCustomer(o.customerId) : null;
     const total = orderTotal(o);
     const date  = o.finalizedAt ? new Date(o.finalizedAt).toLocaleString('en-IN') : '';
+
+    // Build customer display — permanent customer, walk-in with name, or anonymous
+    let custDisplay = '';
+    if (cust) {
+      custDisplay = escHtml(cust.name);
+    } else if (o.walkIn?.name) {
+      custDisplay = `${escHtml(o.walkIn.name)}<span class="walkin-badge">walk-in</span>`;
+    } else {
+      custDisplay = 'Walk-in (anonymous)';
+    }
+
+    // Show convert button only for walk-in due orders not yet converted
+    const showConvert = !o.customerId && o.walkIn && o.payment === 'due';
+
     return `<div class="hist-card">
       <div class="hc-hdr">
-        <div><div class="hc-id">#${o.id}</div><div class="hc-cust">${cust?escHtml(cust.name):'Walk-in'}</div></div>
+        <div>
+          <div class="hc-id">#${o.id}</div>
+          <div class="hc-cust">${custDisplay}</div>
+          ${o.walkIn?.phone ? `<div style="font-size:11px;color:var(--muted)">${escHtml(o.walkIn.phone)}</div>` : ''}
+          ${showConvert ? `<button class="convert-btn" onclick="convertWalkInToCustomer(${o.id})">+ Save as customer</button>` : ''}
+        </div>
         <div>
           <div class="hc-total">₹${fmtPrice(total)}</div>
           <div class="hc-payment ${o.payment==='paid'?'paid':'due'}">${o.payment==='paid'?'✓ Paid':'📋 Due'}</div>
